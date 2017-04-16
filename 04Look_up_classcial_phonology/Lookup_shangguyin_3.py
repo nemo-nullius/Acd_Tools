@@ -12,13 +12,12 @@
     若所檢字在表中沒有，則輸出“沒有結果。”。
     若欲退出，則按兩下回車。
     該txt表的默認路徑是：./Res/Hanziguyinshouce.txt
-運行環境：python 2.7.6 + ubuntu 14.04
-已兼容windows. python 2.7.13 + Spyder (Anaconda)。還有點bug...
+這是for python3的版本。
+運行平台：python3.6 + windows10通過。
 
 '''
 
 import csv
-import locale #兼容windows.在win下，通過raw_input()函數，輸入的是cp936編碼！！所以要用這個轉碼。
 
 data_path = './Res/Hanziguyinshouce.txt' #儲存漢字古音手冊txt文檔的路徑
 
@@ -55,9 +54,9 @@ def look_up(str_x, file_path):
     此函數用來在文檔中搜尋數據
     '''
     result = '' #存儲查詢的字符串的最終結果
-    with open(file_path, 'r') as csvf:
+    with open(file_path, 'r', encoding = 'utf-8') as csvf:
         contents = csv.reader(csvf, delimiter = '\t') #文檔的分隔標誌爲tab鍵
-        for x in str_x.decode('utf-8'): #str_x是個字符串，此時的x是unicode，且字符串亦被轉爲unicode，這樣才能準確遍歷字符串
+        for x in str_x:
             #print csvf.tell() #獲得文件指針所在的位置
             csvf.seek(0) #每循環一次，都要把文件指針指向文件首
 
@@ -65,7 +64,6 @@ def look_up(str_x, file_path):
 
             #contents = csv.reader(csvf, delimiter = '\t') #文檔的分隔標誌爲tab鍵 #此句放在此處和放在for循環外是一致的
 
-            x = x.encode('utf-8')
 
             result = result + '\n' + '-' * 10 + ' ' + x + ' ' + '-' * 10 + '\n'
             result_x = '' #存儲所查每一個字的結果
@@ -83,11 +81,11 @@ def look_up(str_x, file_path):
     return result
 
 def Input_or_Exit():
-    x = raw_input('=' * 40 + '\n' + 'Please input a character > ').decode(locale.getpreferredencoding()).encode('utf-8')
+    x = input('=' * 40 + '\n' + 'Please input a character > ')
     if x == '':
-        x = raw_input('Press the ENTER again to exit > ').decode(locale.getpreferredencoding()).encode('utf-8')
+        x = input('Press the ENTER again to exit > ')
         if x == '':
-            exit()
+                exit()
         else:
             return x
     else:
@@ -95,4 +93,4 @@ def Input_or_Exit():
 
 if __name__ == '__main__':
     while True:
-        print look_up(Input_or_Exit(), data_path)
+        print (look_up(Input_or_Exit(), data_path))

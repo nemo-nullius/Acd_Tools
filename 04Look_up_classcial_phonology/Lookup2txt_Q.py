@@ -97,27 +97,25 @@ def output_format(lookedup_array, x): #參數：已查到的內容，輸出文�
     '''
     status = 0 #返回執行狀態
     result = ''
-    #先是沒有結果的情況
-    if x in ' 　': #空格：直接忽略
-        pass
-        status = 3
-    elif x == '\n': #換行：補足tab後直接輸出
-        result = '\t' * 15 + '\n' #'\t'補足規則：每一行都有15個\t，行末是\n
-        status = 4
-    elif x in punctuation: #標點：補足tab後直接輸出
-        result = x + '\t' * 15 + '\n'
-        status = 5
-    elif lookedup_array[0] == '沒有結果。':
-        result = x + '\t' + '沒有結果。' + '\t' * 14 + '\n'
-        status = 0 #表示沒有結果
-    else: #有結果的情況
-        for i in range(0, len(lookedup_array)): #因爲可能有多音字，故用for循環
-            if i < 1: #單音字
-                result = x + '\t' + lookedup_array[i] + '\n'
-                status = 1
-            else: #多音字
-                result = result + '〖' + x + str(i+1) + '〗\t' + lookedup_array[i] + '\n' #與前一程序不同，此處不再是一行行輸入文件了。所以前面的【result+】萬萬不可少！
-                status = 2
+    for i in range(0, len(lookedup_array)): #因爲可能有多音字，故用for循環
+        if x in ' 　': #空格：直接忽略
+            pass
+            status = 2
+        elif x == '\n': #換行：補足tab後直接輸出
+            result = '\t' * 15 + '\n' #'\t'補足規則：每一行都有15個\t，行末是\n
+            status = 3
+        elif x in punctuation: #標點：補足tab後直接輸出
+            result = x + '\t' * 15 + '\n'
+            status = 4
+        elif lookedup_array[i] == '沒有結果。':
+            result = x + '\t' + '沒有結果。' + '\t' * 14 + '\n'
+            status = 0 #表示沒有結果
+        elif i < 1: #單音字
+            result = x + '\t' + lookedup_array[i] + '\n'
+            status = 1
+        else: #多音字
+            result = result + '〖' + x + str(i+1) + '〗\t' + lookedup_array[i] + '\n' #與前一程序不同，此處不再是一行行輸入文件了。所以前面的【result+】萬萬不可少！
+            status = 2
     return result, status
 
 def output_all(str_x):

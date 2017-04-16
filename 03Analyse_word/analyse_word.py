@@ -1,10 +1,10 @@
 #-*-coding:utf-8-*-
 
-biaodian0 = unicode('，。？……！——：；、  ','utf-8') #……与——各占两个unicode
-biaodian_shu_b = unicode('《〈', 'utf-8')
-biaodian_shu_a = unicode('》〉', 'utf-8')
-biaodian_yin_b = unicode('“‘', 'utf-8')
-biaodian_yin_a = unicode('”’', 'utf-8')
+biaodian0 = str('，。？……！——：；、  ') #……与——各占两个unicode
+biaodian_shu_b = str('《〈')
+biaodian_shu_a = str('》〉')
+biaodian_yin_b = str('“‘')
+biaodian_yin_a = str('”’')
 
 char_before_str = ''
 char_after_str = ''
@@ -71,54 +71,50 @@ def add_char(char_list, u_str): #注意：存储的每一个char信息是utf-8
     char_list.append(single_char_dic)
     return 'add'
 
-x = raw_input('Please input a character to be analysed > ')
-#x = '曰'
-char_before = []
-char_after = []
-content_list = []
+x =''
+x = input('Please input a character to be analysed > ')
+while x != "exit":
+	
+	#x = '曰'
+	char_before = []
+	char_after = []
+	content_list = []
 
-with open('./Texts/Zuozhuan_Xianyun_Revised_utf8.txt',"r") as f:
-    while 1:
-        line = unicode(f.readline(),'utf-8')
-        #line = f.readline()
-        #讀到行尾，結束讀取
-        if not line:
-            break
+	with open('./Texts/Zuolunguo_combine.txt',"r", encoding='utf-8') as f:
+    		while 1:
+        		line = str(f.readline())
+        		#line = f.readline()
+        		#讀到行尾，結束讀取
+        		if not line:
+            			break
 
-        content_list.append(line)
-'''
-print content_list[0]
-print len(content_list)
-print len(content_list[0])
-print content_list[0][0]
-'''
-for i in range(0, len(content_list)): #遍历文档的每一行
-    for j in range(0, len(content_list[i])): #遍历文档的每一行的每一字
-        if content_list[i][j] == x.decode('utf-8'):
-            print 'b '+char_before_check(content_list[i], j)
-            print 'a '+char_after_check(content_list[i], j)
-            print add_char(char_before, char_before_check(content_list[i], j))
-            print add_char(char_after, char_after_check(content_list[i], j))
+        		content_list.append(line)
 
-'''
-for i in char_before:
-    print 'char '+i['char']+', '+'num: '+str(i['num'])
+	num_char = 0 #用以记录所查字出现的次数
+	for i in range(0, len(content_list)): #遍历文档的每一行
+    		for j in range(0, len(content_list[i])): #遍历文档的每一行的每一字
+        		if content_list[i][j] == x:
+            			#print('b '+char_before_check(content_list[i], j))
+            			#print('a '+char_after_check(content_list[i], j))
+            			add_char(char_before, char_before_check(content_list[i], j))
+            			add_char(char_after, char_after_check(content_list[i], j))
+            			num_char = num_char + 1
 
-print '-'*20
 
-for i in char_after:
-    print 'char '+i['char']+', '+'num: '+str(i['num'])
+	#据num值从大到小排序
+	char_before = sorted(char_before, key = lambda k: k['num'], reverse = True)
+	char_after = sorted(char_after, key = lambda k: k['num'], reverse = True)
 
-print '='*20
-'''
-#据num值从大到小排序
-char_before = sorted(char_before, key = lambda k: k['num'], reverse = True)
-char_after = sorted(char_after, key = lambda k: k['num'], reverse = True)
+	print('='*10+'在【'+x+'】之前的字'+'='*10)
+	for i in char_before:
+    		print(' '*2 + i['char']+' : '+str(i['num']))
 
-for i in char_before:
-    print 'char: '+i['char']+', '+'num: '+str(i['num'])
+	print('='*10+'在【'+x+'】之後的字'+'='*10)
 
-print '-'*20
+	for i in char_after:
+    		print(' '*2 + i['char']+' : '+str(i['num']))
+    		#print('char: '+i['char']+', '+'num: '+str(i['num']))
 
-for i in char_after:
-    print 'char: '+i['char']+', '+'num: '+str(i['num'])
+	print('='*28)
+	print(x+'字共出现%d次' %num_char)
+	x = input('Please input a character to be analysed > ')

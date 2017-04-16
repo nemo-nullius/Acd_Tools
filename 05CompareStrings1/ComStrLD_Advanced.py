@@ -45,19 +45,20 @@ def GoBack(L, i, j): #在StrA[i]！=StrB[j]时，专门用来回溯的函数
     else: #左边的单元格是最小值
         return 2
 
-def Output(Strs, n): #用来控制【缺字/多字】与【异字】的格式
+def Output(Strs, Strs_oth, n): #用来控制【缺字/多字】与【异字】的格式
     '''
     n = -1 缺字
     n =  1 多字
     n =  0 异字
+    Strs_oth 传递Strs所缺或相异之字
     '''
     s = ''
     if n == -1:
-        s = '-'
+        s = '>' + Strs_oth + '<'
     elif n == 1:
         s = ')' + Strs + '('
     elif n == 0:
-        s = ']' + Strs + '['
+        s = ']' + Strs_oth + '|' + Strs + '['
     else:
         print ('Error of n!')
     return s
@@ -71,12 +72,12 @@ def Compare(L, StrA, StrB): #得出比较后的结果
         if i == 0 or j == 0: #当至少其中一个已经回溯完了
             if i != 0: #StrA未回溯完，则StrA剩下的全是【增字】
                 for m in range(i-1, -1, -1):
-                    sA = sA + Output(StrA[m], 1)
-                    sB = sB + Output('', -1)
+                    sA = sA + Output(StrA[m], '', 1)
+                    sB = sB + Output('', StrA[m], -1)
             elif j != 0: #StrB未回溯完，则StrB剩下的全是【增字】
                 for n in range(j-1, -1, -1):
-                    sA = sA + Output('', -1)
-                    sB = sB + Output(StrB[n], 1)
+                    sA = sA + Output('', StrB[n], -1)
+                    sB = sB + Output(StrB[n], '', 1)
             break
         elif StrA[i-1] == StrB[j-1]: #相同时，直接向左上方回溯
             i = i - 1
@@ -88,43 +89,25 @@ def Compare(L, StrA, StrB): #得出比较后的结果
             if n == 0: #往左上角回溯：【不同】
                 i = i - 1
                 j = j - 1
-                sA = sA + Output(StrA[i], 0)
-                sB = sB + Output(StrB[j], 0)
+                sA = sA + Output(StrA[i], StrB[j], 0)
+                sB = sB + Output(StrB[j], StrA[i], 0)
             elif n == 1: #往上边回溯：StrB【增字】，StrA【缺字】
                 j = j - 1
-                sA = sA + Output('', -1)
-                sB = sB + Output(StrB[j], 1)
+                sA = sA + Output('', StrB[j], -1)
+                sB = sB + Output(StrB[j], '', 1)
             elif n == 2: #往左边回溯：StrB【缺字】，StrA【增字】
                 i = i - 1
-                sA = sA + Output(StrA[i], 1)
-                sB = sB + Output('', -1)
+                sA = sA + Output(StrA[i], '', 1)
+                sB = sB + Output('', StrA[i], -1)
 
     return (sA[::-1], sB[::-1])
 
-def read_input_file(from_file_path):
-    '''
-    此函數用以讀入欲比较之文件。將文件所有內容存爲字符串。
-    '''
-    result = ''
-    with open(from_file_path, 'r', encoding = 'utf-8') as f:
-        result = f.read() #讀入文檔的全部內容並存爲字符串
-    return result
-
-def write_into_file(to_file_path, s):
-    with open(to_file_path, 'w', encoding = 'utf-8') as f:
-        f.write(s)
 
 
-fileA_in = './Maoshi01(GJK)_Trimmed' #读入要比较之文档之路径
-fileB_in = './Maoshi(Wiki)_Trimmed'
 
-fileA_to = fileA_in + '_To' #比较结果存储路径
-fileB_to = fileB_in + '_To'
 
 if __name__ == '__main__':
-    Str1 = read_input_file(fileA_in)
-    Str2 = read_input_file(fileB_in)
-    #print (LD(Str1, Str2))
-    Cmp_S1, Cmp_S2 = Compare((LD(Str1, Str2)), Str1, Str2)
-    write_into_file(fileA_to, Cmp_S1)
-    write_into_file(fileB_to, Cmp_S2)
+    Str1 = input('The FIRST String > ')
+    Str2 = input('The SECOND String > ')
+    print (LD(Str1, Str2))
+    print (Compare((LD(Str1, Str2)), Str1, Str2))

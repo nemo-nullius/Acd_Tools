@@ -84,14 +84,14 @@ def write2txt(lookedup_array, input_path, x): #參數：已查到的內容，輸
         for i in range(0, len(lookedup_array)): #因爲可能有多音字，故用for循環
             if x in ' 　': #空格：直接忽略
                 pass
-                result = 3
+                result = 2
             elif x == '\n': #換行：補足tab後直接輸出
                 f.write('\t' * 15 + '\n') #'\t'補足規則：每一行都有15個\t，行末是\n
-                result = 4
+                result = 3
             elif x in punctuation: #標點：補足tab後直接輸出
                 input_content = x + '\t' * 15 + '\n'
                 f.write(input_content)
-                result = 5
+                result = 4
             elif lookedup_array[i] == '沒有結果。':
                 input_content = x + '\t' + '沒有結果。' + '\t' * 14 + '\n'
                 f.write(input_content)
