@@ -1,0 +1,5 @@
+# Only commit *.py
+*
+!*/
+!*.py
+!.gitignore
