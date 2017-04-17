@@ -1,4 +1,5 @@
 #-*-coding:utf-8-*-
+import re
 
 f_path = './Texts/Zuolunguo_combine.txt'
 
@@ -7,6 +8,7 @@ biaodian_shu_b = str('《〈')
 biaodian_shu_a = str('》〉')
 biaodian_yin_b = str('“‘')
 biaodian_yin_a = str('”’')
+quotes = biaodian_shu_b + biaodian_shu_a + biaodian_yin_b + biaodian_yin_a
 
 char_before_str = ''
 char_after_str = ''
@@ -74,8 +76,35 @@ def add_char(char_list, u_str): #注意：存储的每一个char信息是utf-8
     return 'add'
 
 
+content = open(f_path, encoding='utf-8').read()
 x = input('Please input a character to be analysed > ')
 while x != "exit":
+    char_before = {}
+    char_after = {}
+
+    pattern = r'(?P<before>[^{sep}]?[{skip}]*){input}(?P<after>[{skip}]*[^{sep}]?)'.format(
+        skip=quotes,
+        input=x,
+        sep=biaodian0,
+    )
+    for res in re.finditer(pattern, content):
+        before = res.group('before')
+        after = res.group('after')
+        if not before.strip(quotes):
+            before = 'Head'
+        if not after.strip(quotes):
+            after = 'End'
+        char_before[before] = char_before.get(before, 0) + 1
+        char_after[after] = char_after.get(after, 0) + 1
+
+    print('在【{}】之前的字'.format(x).center(28, '='))
+    for char in sorted(char_before, key=lambda x: char_before[x], reverse=True):
+        print('  {} : {}'.format(char, char_before[char]))
+    print('在【{}】之後的字'.format(x).center(28, '='))
+    for char in sorted(char_after, key=lambda x: char_after[x], reverse=True):
+        print('  {} : {}'.format(char, char_after[char]))
+    print('='*28)
+    print('{}字共出现{}次'.format(x, sum(char_before.values())))
     
     #x = '曰'
     char_before = []
