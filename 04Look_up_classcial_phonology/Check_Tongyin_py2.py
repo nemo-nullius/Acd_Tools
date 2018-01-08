@@ -4,7 +4,6 @@
 
 import csv
 import re
-import sys
 
 end_sentence = '。！？：；… 　\n'#注意這裏有個半角空格和全角空格，還有一個回車換行符
 
@@ -41,8 +40,8 @@ def check_character(x1, x2):
     '''
     result = 0 #判斷是否爲不同的字，同字，或同一字的多音字
 
-    matchObj_i = re.match(r'〖.', x1)#也許用個前後斷言不會看起來這麼山寨，但不知是否會增加時間
-    matchObj_j = re.match(r'〖.', x2)
+    matchObj_i = re.match(r'〖.'.decode('utf-8'), x1.decode('utf-8'))#也許用個前後斷言不會看起來這麼山寨，但不知是否會增加時間
+    matchObj_j = re.match(r'〖.'.decode('utf-8'), x2.decode('utf-8'))
 
     if matchObj_i == None and matchObj_j == None: #沒有〖符號
         if x1 == x2: #參，參
@@ -50,7 +49,7 @@ def check_character(x1, x2):
         else: #參，差
             result = 0 #不同的字
     elif matchObj_i == None and matchObj_j != None: #參〖參1〗。差〖參1〗
-        match_i = '〖'+x1
+        match_i = unicode('〖'+x1, 'utf-8')
         match_j = matchObj_j.group()
         if match_i == match_j:
             result = 2 #多音字
@@ -58,7 +57,7 @@ def check_character(x1, x2):
             result = 0 #不同的字
     elif matchObj_i != None and matchObj_j == None: #〖參1〗參。〖參1〗差
         match_i = matchObj_i.group()
-        match_j = '〖'+x2
+        match_j = unicode('〖'+x2, 'utf-8')
         if match_i == match_j:
             result = 2 #多音字
         else:
@@ -141,13 +140,8 @@ def check_tongyin(parsed_list):
 
 if __name__ == '__main__':
     #from_file = './Output.txt'
-    #from_file = "./Texts/Output(Zuozhuan)_Q.txt"
-    #to_file = from_file + "_Tongyin_Checked_New2"
-    from_file = sys.argv[1]
-    fileNameInfo = from_file.split('.')
-    fileName = '.'.join(fileNameInfo[0:-1])
-    fileClass = fileNameInfo[-1]
-    to_file = ''.join((fileName, '_CP','.',fileClass))
+    from_file = "./Texts/20180106Workshop/Xunzi.Quanxue_Result.txt"
+    to_file = from_file + "_CheckedTongyin"
 
     result = parsing(read_from_file(from_file))
     for i in range(0, len(result)):

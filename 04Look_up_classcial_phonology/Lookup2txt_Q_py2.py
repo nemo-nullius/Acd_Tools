@@ -1,19 +1,14 @@
 #!/usr/bin/env python
 #-*-coding:utf-8-*-
 
-# For Python3
-
 import csv
 import sys
-import os
 
 #from_file = "./Texts/Zuozhuan_Xianyun_Revised_utf8.txt"
 #to_file = "./Texts/Output(Zuozhuan)_Q.txt"
 #from_file = './Input.txt'
 #to_file = './Output_Q.txt'
-program_path = os.path.abspath(__file__)
-data_path = os.path.join(os.path.dirname(program_path), "Res/Hanziguyinshouce.txt")
-#data_path = "./Res/Hanziguyinshouce.txt"
+data_path = "./Res/Hanziguyinshouce.txt"
 punctuation = '，。！？：；…—（）《》〈〉“”‘’’ 　\n'#注意這裏有個半角空格和全角空格，還有一個回車換行符
 
 def read_database(database_path):
@@ -21,7 +16,7 @@ def read_database(database_path):
     此函數用以將所有《手冊》資料從文件中讀入，並以一定格式作爲list輸出。
     '''
     result = []
-    with open(database_path, 'r', encoding='utf-8') as csvf:
+    with open(database_path, 'r') as csvf:
         contents = csv.reader(csvf, delimiter = '\t')
         for row in contents: #對文件的每一行進行循環。row本身會返回一個數組。
             result.append(row)
@@ -32,30 +27,32 @@ def read_input_file(from_file_path):
     此函數用以讀入欲標注古音之文件。將文件所有內容存爲字符串。
     '''
     result = ''
-    with open(from_file_path, 'r', encoding='utf-8') as f:
+    with open(from_file_path, 'r') as f:
         result = f.read() #讀入文檔的全部內容並存爲字符串
     return result
 
 def del_enclitcs(str_x): #用以刪去字符串中的*%^等符號：把這些符號全部變成空格，堆到字符串最右邊，最後一起刪掉
-    enclitics = '%*^' #存儲要刪去的符號
+    str_x = str_x.decode('utf-8')
+    enclitics = '%*^'.decode('utf-8') #存儲要刪去的符號
     for i in range(0, len(str_x)):
         while str_x[i] in enclitics: #刪除符號：符號前的部分+符號後的部分+空格
             temp_b = str_x[0:i]
             temp_a = str_x[i+1:len(str_x)]
-            str_x = temp_b + temp_a + ' '
+            str_x = temp_b + temp_a + ' '.decode('utf-8')
     str_x = str_x.strip() #刪去末尾空格
-    return str_x
+    return str_x.encode('utf-8')
 
 def txt_in_brackets(str_x, x): #用以將str_x中x之後【】當中的字符抽出
-    result = ''
-    str_x = str_x
-    x = x
+    result = ''.decode('utf-8')
+    str_x = str_x.decode('utf-8')
+    x = x.decode('utf-8')
     for i in range(0, len(str_x)):
-        if str_x[i] == '【' and str_x[i-1] == x:
-            while str_x[i] != '】' and i < len(str_x)-1: #以防漏打】而出錯
+        if str_x[i] == '【'.decode('utf-8') and str_x[i-1] == x:
+            while str_x[i] != '】'.decode('utf-8') and i < len(str_x)-1: #以防漏打】而出錯
                 result = result + str_x[i]
                 i = i + 1
-            result = result + '】' #把右邊的括號加上，更美觀些
+            result = result + '】'.decode('utf-8') #把右邊的括號加上，更美觀些
+    result = result.encode('utf-8')
     return result
 
 def output(row, x): #參數：所找到的一行數據，所查的字
@@ -133,7 +130,8 @@ def output_all(str_x):
     data_list = read_database(data_path)
     result_x = ''#用以記錄每一所查單字的結果
     i_no_result = 0 #記錄“沒有結果”的數量
-    for x in str_x: #對字符串中的每一個單字進行查衣裝
+    for x in str_x.decode('utf-8'): #對字符串中的每一個單字進行查衣裝
+        x = x.encode('utf-8')
         result_x, status = output_format(look_up_from_list(x, data_list), x)
         if status == 0:
             i_no_result += 1
@@ -145,11 +143,11 @@ if __name__ == "__main__":
     fileNameInfo = from_file.split('.')
     fileName = '.'.join(fileNameInfo[0:-1])
     fileClass = fileNameInfo[-1]
-    to_file = ''.join((fileName, '_TP','.',fileClass))
+    to_file = ''.join((fileName, '_Result','.',fileClass))
 
     result = ''
     i_no_result = 0
     with open(to_file, 'w') as f:
         result, i_no_result = output_all(read_input_file(from_file))
         f.write(result)
-    print ("共有%d個字沒有查到。" %i_no_result)
+    print "共有%d個字沒有查到。" %i_no_result
